@@ -94,8 +94,6 @@ public class AdminConrtroller {
         }
 
 
-
-
         return "index";
     }
 }
