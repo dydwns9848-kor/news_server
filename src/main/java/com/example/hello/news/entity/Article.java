@@ -29,7 +29,7 @@ public class Article {
     private Category category;
 
 
-    @Column(length = 50)
+    @Column(length = 150)
     private String author;
 
     @Column(length = 500)
