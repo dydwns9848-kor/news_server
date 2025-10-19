@@ -7,13 +7,12 @@ import com.example.hello.news.entity.Category;
 import com.example.hello.news.service.ArticleService;
 import com.example.hello.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -31,7 +30,7 @@ public class AdminConrtroller {
         List<CategoryDTO> categorise = newsService.getCategories();
         model.addAttribute("category", categorise);
 
-        return "category";
+        return "category";  // templates directory 아래에 있는 category.html을 렌더링하라.
     }
     
     // categoryName.trim() ---> 문자열 공백 날리고 글자만 인식
@@ -64,9 +63,33 @@ public class AdminConrtroller {
         return "redirect:/admin/category";
     }
 
+    @PostMapping("/updateCategory/{id}")
+    public String updateCategory(@PathVariable("id")String categoryId,
+                                 @RequestParam("name")String categoryName,
+                                 @RequestParam("memo")String categoryMemo,
+                                 Model model) {
+
+        newsService.updateCategory(categoryId, categoryName, categoryMemo);
+
+        return "redirect:/admin/category";
+    }
+
+    @PostMapping("/deleteCategory/{id}")
+    public String deleteCategory(@PathVariable String id, Model model) {
+        try {
+            newsService.deleteCategory(id);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return  "category";
+        }
+
+        return "redirect:/admin/category";
+    }
+
+
     @GetMapping("/source")
-    public String getSources(Model model){
-        List<SourceDTO> sources = newsService.getSources();
+    public String getSources(Model model, Pageable pageable){
+        Page<SourceDTO> sources = newsService.getSources(pageable);
         model.addAttribute("sources", sources );
 
         return "source";
